@@ -24,7 +24,7 @@ podman run -p 8080:8080 yew_game_of_life:single
 ## Multi Stage Debug Build
 再來則是試著把編譯與執行分離，做出一個比較小的 image。
 ``` shell
-podman build -t yew_game_of_life:single -f Dockerfile.debug
+podman build -t yew_game_of_life:debug -f Dockerfile.debug
 ```
 
 編出來的大小約是這樣：
@@ -41,7 +41,7 @@ podman run -p 8080:8080 yew_game_of_life:debug
 ## Multi Stage Release Build - Python HTTP server
 因為 trunk 必須要用到 `cargo metadata`，而無論是哪個 image，只要裝上 cargo 都會飛升到 500 MB 以上的大小，所以我把目光朝向了編完就丟上一個最簡單的 HTTP server 執行的方向。我用了一個 Python 的 Docker image，在不需配置的情況下利用 Alpine 這個用 MUSL C library 的基礎上縮到了最小。
 ``` shell
-podman build -t yew_game_of_life:single -f Dockerfile.pyhttp
+podman build -t yew_game_of_life:pyhttp -f Dockerfile.pyhttp
 ```
 
 編出來的大小約是這樣：
@@ -58,7 +58,7 @@ podman run -p 8080:8080 yew_game_of_life:pyhttp
 ## Multi Stage Release Build - NGINX
 但上面的還是有著 50 MB 以上的大小，作為最小化來說還是不夠。所以改用了需要設定檔的 NGINX，縮減後的基礎 image 大小只有 18.1 MB，十分吸引人。
 ``` shell
-podman build -t yew_game_of_life:single -f Dockerfile.release
+podman build -t yew_game_of_life:release -f Dockerfile.release
 ```
 
 編出來的大小約是這樣：
